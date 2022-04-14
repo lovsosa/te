@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Autocomplete } from "@mui/material";
-import { category } from "../../../data/category";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import style from "./FormInput.module.sass";
@@ -10,18 +9,15 @@ import axios from "../../../api/axios.news";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
-// import styled from "styled-components";
-// const Input = styled("input")({
-//   display: "none",
-// });
+const DEFAULT = {
+  categories: 0,
+  title: "",
+  smallDes: "",
+  fullDescription: "",
+};
 
 function FormInput({ data }) {
-  const [formNews, setFormNews] = useState({
-    category: "",
-    title: "",
-    smallDes: "",
-    fullDescription: "",
-  });
+  const [formNews, setFormNews] = useState({ ...DEFAULT });
 
   const changeHandler = (e) => {
     setFormNews({
@@ -30,10 +26,10 @@ function FormInput({ data }) {
     });
   };
 
-  const changeHandlerInnerText = (e) => {
+  const changeHandlerInnerText = (e, newValue) => {
     setFormNews({
       ...formNews,
-      category: e.target.innerText,
+      categories: newValue.id,
     });
   };
 
@@ -47,7 +43,6 @@ function FormInput({ data }) {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
-        console.log(res.data[0]);
         setUploadImage(res.data[0]);
       })
       .catch((error) => {
@@ -61,24 +56,17 @@ function FormInput({ data }) {
       .post("/news", {
         data: {
           ...formNews,
-          image: uploadImage,
+          image: { ...uploadImage },
         },
       })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
+        setFormNews({ ...DEFAULT });
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  // Object.keys(data).map((key) => {
-  //   console.log();
-  //   return {
-  //     ...data[key],
-  //     id: key,
-  //   };
-  // });
   return (
     <>
       <Box
@@ -94,19 +82,22 @@ function FormInput({ data }) {
         <div className={style.sidebar}>
           <Autocomplete
             id="combo-box-demo"
-            options={category}
+            options={data}
             sx={{ width: 300, maxWidth: "100%" }}
             onChange={changeHandlerInnerText}
-            renderInput={(params) => (
-              <TextField
-                name="category"
-                value={formNews.category}
-                {...params}
-                id="standard-basic"
-                label="Выберите категорию"
-                variant="standard"
-              />
-            )}
+            renderInput={(params) => {
+              return (
+                <TextField
+                  onChange={changeHandler}
+                  name="categories"
+                  value={data.id}
+                  {...params}
+                  id="standard-basic"
+                  label="Выберите категорию"
+                  variant="standard"
+                />
+              );
+            }}
           />
           <TextField
             value={formNews.title}
@@ -169,9 +160,11 @@ function FormInput({ data }) {
               </IconButton>
             </label>
           </Stack>
-          <Button variant="outlined" color="error" type="submit">
-            Отправить
-          </Button>
+          {
+            <Button variant="outlined" color="error" type="submit">
+              Отправить
+            </Button>
+          }
         </div>
       </Box>
     </>
