@@ -20,7 +20,6 @@ function Slider() {
         }}
         navigation={true}
         modules={[Parallax, Pagination, Navigation]}
-        className="mySwiper"
       >
         <div
           slot="container-start"

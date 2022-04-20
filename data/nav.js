@@ -5,17 +5,17 @@ export const nav = [
     id: "home",
   },
   {
-    href: "/",
+    href: "/aboutUs",
     title: "О нас",
     id: "about",
   },
   {
-    href: "/",
+    href: "/allNews",
     title: "Новости",
     id: "news",
   },
   {
-    href: "/",
+    href: "/addNews",
     title: "Контакты",
     id: "contact",
   },

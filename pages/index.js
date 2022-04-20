@@ -1,62 +1,33 @@
 import Head from "next/head";
 import Slider from "../components/UI/Slider/Slider";
-import style from "../styles/Home.module.sass";
-import axios from "../api/axios.news";
+import styles from "../styles/Home.module.sass";
+import LastNews from "../components/LastNews/LastNews";
+import { Button, Link } from "@mui/material";
 
-export default function Home({ data }) {
+export default function Home() {
   return (
-    <div className={style.container}>
+    <div className={styles.container}>
       <Head>
         <title>Home</title>
         <meta name="Home" content="News in Kyrgyzstan" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={style.mainSlider}>
+      <main className={styles.mainSlider}>
         <Slider />
       </main>
-      <section className={style.lastNews}>
-        {data.map((news) => {
-          return (
-            <div key={news.id} className={style.post}>
-              <span className={style.postImg}>
-                {news.image ? (
-                  <img
-                    className={style.post__img}
-                    src={news.image.url}
-                    alt=""
-                  />
-                ) : null}
-              </span>
-              <h3 className={style.postTitle}>{news.title}</h3>
-              <span className={style.smallDescription}>{news.smallDes}</span>
-            </div>
-          );
-        })}
-        
+      <section className={styles.lastNews}>
+        <LastNews />
+        <Link>
+          <Button
+            variant="outlined"
+            color="error"
+            type="submit"
+            className={styles.allNews__btn}
+          >
+            Все новости
+          </Button>
+        </Link>
       </section>
     </div>
   );
 }
-export const getStaticProps = async () => {
-  try {
-    const res = await axios.get(
-      "/news?sort=publishedAt:DESC&pagination[pageSize]=3&populate=image"
-    );
-    if (!res.data) {
-      throw new Error();
-    }
-    return {
-      props: {
-        data: res.data.data,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        data: [],
-        error,
-      },
-    };
-  }
-};

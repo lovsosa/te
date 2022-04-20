@@ -10,37 +10,45 @@ import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 const DEFAULT = {
-  categories: 0,
+  categories: null,
   title: "",
   smallDes: "",
   fullDescription: "",
 };
 
 function FormInput({ data }) {
+  // State
   const [formNews, setFormNews] = useState({ ...DEFAULT });
+  const [uploadImage, setUploadImage] = useState();
+  const [loading, setLoading] = useState(false);
 
+  //Handler
   const changeHandler = (e) => {
     setFormNews({
       ...formNews,
       [e.target.name]: e.target.value,
     });
   };
-
   const changeHandlerInnerText = (e, newValue) => {
-    setFormNews({
-      ...formNews,
-      categories: newValue.id,
-    });
+    if (newValue) {
+      setFormNews({
+        ...formNews,
+        categories: newValue.id,
+      });
+    } else {
+      return;
+    }
   };
-
-  const [uploadImage, setUploadImage] = useState();
 
   const onFileState = (e) => {
     const formData = new FormData();
     formData.append("files", e.target.files[0]);
     axios
       .post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => {
         setUploadImage(res.data[0]);
@@ -50,8 +58,10 @@ function FormInput({ data }) {
       });
   };
 
+  // Submit
   const onSubmitForm = (e) => {
     e.preventDefault();
+    setLoading(true);
     axios
       .post("/news", {
         data: {
@@ -63,7 +73,10 @@ function FormInput({ data }) {
         setFormNews({ ...DEFAULT });
       })
       .catch((error) => {
-        console.log(error);
+        setLoading(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -90,7 +103,7 @@ function FormInput({ data }) {
                 <TextField
                   onChange={changeHandler}
                   name="categories"
-                  value={data.id}
+                  // value={data.id}
                   {...params}
                   id="standard-basic"
                   label="Выберите категорию"
@@ -160,11 +173,24 @@ function FormInput({ data }) {
               </IconButton>
             </label>
           </Stack>
-          {
-            <Button variant="outlined" color="error" type="submit">
-              Отправить
+          {formNews.title &&
+          formNews.categories !== 0 &&
+          formNews.smallDes &&
+          formNews.fullDescription &&
+          uploadImage ? (
+            <Button
+              variant="outlined"
+              color="error"
+              type="submit"
+              disabled={loading}
+            >
+              {!loading ? "Отправить" : "Отправляем файлы"}
             </Button>
-          }
+          ) : (
+            <Button variant="outlined" disabled>
+              Заполните форму
+            </Button>
+          )}
         </div>
       </Box>
     </>
