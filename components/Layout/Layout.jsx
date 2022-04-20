@@ -1,17 +1,21 @@
-import React, { useEffect } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import Navbar from "./navbar/Navbar";
-import { useCookies } from "react-cookie";
 import Footer from "./Footer/Footer";
 import Search from "../Search/Search";
 
+export const AppContext = createContext();
+
 function Layout({ children }) {
+  const [webColor, setWebColor] = useState("white");
   return (
-    <div className="wrapper">
-      <Navbar />
-      {children}
-      <Footer />
-      <Search />
-    </div>
+    <AppContext.Provider value={{ webColor, setWebColor }}>
+      <div className="wrapper">
+        <Navbar />
+        {children}
+        <Search />
+        <Footer />
+      </div>
+    </AppContext.Provider>
   );
 }
 

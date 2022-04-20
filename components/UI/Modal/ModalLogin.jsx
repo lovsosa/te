@@ -27,18 +27,21 @@ function ModalLogin({ show, close }) {
   const changeHandler = (e) => {
     setLoginUser({
       ...loginUser,
-      [e.target.name]: e.target.value,
+      value: {
+        ...loginUser.value,
+        [e.target.name]: e.target.value,
+      },
     });
   };
 
   //Submit userForm
-  const onSubmit = async (e, close) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (loginUser.identifier && loginUser.password) {
+    if (loginUser.value.identifier && loginUser.value.password) {
       try {
         const response = await axios.post(
           "http://localhost:1337/api/auth/local",
-          loginUser
+          loginUser.value
         );
         const data = { token: response.data.jwt, ...response.data.user };
         setCookie("user", JSON.stringify(data), {
@@ -46,12 +49,12 @@ function ModalLogin({ show, close }) {
           maxAge: 3600,
           sameSite: true,
         });
-        close()
+        close();
+        setLoginUser({ ...DEFAULT });
         router.push("/");
       } catch (error) {
         console.log(error);
       }
-      setLoginUser({ ...DEFAULT });
     } else {
       setLoginUser({
         ...loginUser,
@@ -66,11 +69,7 @@ function ModalLogin({ show, close }) {
 
   return (
     <>
-      <BackDrop
-        errorForm={() => errorFormBack(close)}
-        show={show}
-        close={close}
-      />
+      <BackDrop errorForm={() => errorFormBack()} show={show} />
       <div
         className={cn(styles.modal__container, { [styles.modalShow]: show })}
       >
@@ -83,7 +82,7 @@ function ModalLogin({ show, close }) {
           noValidate
           autoComplete="off"
           className={styles.form__container}
-          onSubmit={() => onSubmit(e, close)}
+          onSubmit={onSubmit}
         >
           {loginUser.errorInput ? (
             <>
@@ -92,7 +91,7 @@ function ModalLogin({ show, close }) {
                 label="Email"
                 type="email"
                 variant="standard"
-                value={loginUser.identifier}
+                value={loginUser.value.identifier}
                 name="identifier"
                 onChange={changeHandler}
               />
@@ -102,7 +101,7 @@ function ModalLogin({ show, close }) {
                 type="password"
                 autoComplete="current-password"
                 variant="standard"
-                value={loginUser.password}
+                value={loginUser.value.password}
                 name="password"
                 onChange={changeHandler}
               />

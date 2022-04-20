@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -7,9 +7,19 @@ import FormLabel from "@mui/material/FormLabel";
 import styles from "../../styles/ProfileSettings.module.sass";
 import Head from "next/head";
 import { useAuthCookie } from "../../hooks/useAuthCookie";
+import { TextField } from "@mui/material";
+import { AppContext } from "../../components/Layout/Layout";
 
 export default function profileSettings() {
-  const { dataUser, setDataUser } = useAuthCookie();
+  // const [userData, setUserData] = useState();
+  const { dataUser } = useAuthCookie();
+  // const [color, setColor] = useState();
+  const { webColor, setWebColor } = useContext(AppContext);
+
+  const radioSubmit = () => {};
+  const radioChange = (e) => {
+    setWebColor(e.target.value);
+  };
 
   return (
     <header className={styles.container}>
@@ -19,18 +29,30 @@ export default function profileSettings() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1 className={styles.settings}>Настройки Аккаунта</h1>
-      <FormControl>
+      <FormControl component={"form"} onSubmit={radioSubmit}>
         <FormLabel id={styles.demoRowRadioButtonsGroupLabel}>
           Тема Сайта
         </FormLabel>
         <RadioGroup
           row
           aria-labelledby="demo-row-radio-buttons-group-label"
-          defaultValue="White"
+          defaultValue={webColor}
           name="row-radio-buttons-group"
         >
-          <FormControlLabel value="White" control={<Radio />} label="Белый" />
-          <FormControlLabel value="Black" control={<Radio />} label="Черный" />
+          <FormControlLabel
+            value="white"
+            name="webColor"
+            onChange={radioChange}
+            control={<Radio />}
+            label="Белый"
+          />
+          <FormControlLabel
+            value="black"
+            name="webColor"
+            onChange={radioChange}
+            control={<Radio />}
+            label="Черный"
+          />
         </RadioGroup>
       </FormControl>
       <FormControl>
@@ -62,10 +84,44 @@ export default function profileSettings() {
       </FormControl>
       <div className={styles.userLoginUpdate}>
         <h2 className={styles.userUpdate}>Аккаунт</h2>
-        {/* {dataUser.map((item) => {
-          console.log(item);
-        })} */}
+        <div className={styles.userData}>
+          <span>Логин:</span>
+          <TextField
+            id="standard-read-only-input"
+            label="Логин"
+            value={dataUser?.login}
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="standard"
+          />
+          <span>Почта:</span>
+          <TextField
+            id="standard-read-only-input"
+            label="Почта"
+            value={dataUser?.email}
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="standard"
+          />
+          <span>Имя:</span>
+          <TextField
+            id="standard-read-only-input"
+            label="Имя"
+            value={dataUser?.username + " " + dataUser?.lastName}
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="standard"
+          />
+        </div>
       </div>
+      <style jsx>{`
+        body {
+          backround-color: black;
+        }
+      `}</style>
     </header>
   );
 }
