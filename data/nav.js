@@ -15,7 +15,7 @@ export const nav = [
     id: "news",
   },
   {
-    href: "/addNews",
+    href: "/contact",
     title: "Контакты",
     id: "contact",
   },

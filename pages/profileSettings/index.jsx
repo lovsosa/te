@@ -11,15 +11,21 @@ import { TextField } from "@mui/material";
 import { AppContext } from "../../components/Layout/Layout";
 
 export default function profileSettings() {
-  // const [userData, setUserData] = useState();
   const { dataUser } = useAuthCookie();
-  // const [color, setColor] = useState();
   const { webColor, setWebColor } = useContext(AppContext);
 
   const radioSubmit = () => {};
   const radioChange = (e) => {
     setWebColor(e.target.value);
   };
+
+  const controlProps = (item) => ({
+    checked: webColor === item,
+    onChange: radioChange,
+    value: item,
+    name: "color-radio-button-demo",
+    inputProps: { "aria-label": item },
+  });
 
   return (
     <header className={styles.container}>
@@ -36,21 +42,21 @@ export default function profileSettings() {
         <RadioGroup
           row
           aria-labelledby="demo-row-radio-buttons-group-label"
-          defaultValue={webColor}
+          // defaultValue={webColor}
           name="row-radio-buttons-group"
         >
           <FormControlLabel
             value="white"
             name="webColor"
-            onChange={radioChange}
-            control={<Radio />}
+            // onChange={radioChange}
+            control={<Radio {...controlProps("white")} />}
             label="Белый"
           />
           <FormControlLabel
             value="black"
             name="webColor"
-            onChange={radioChange}
-            control={<Radio />}
+            // onChange={radioChange}
+            control={<Radio {...controlProps("black")} />}
             label="Черный"
           />
         </RadioGroup>
@@ -86,35 +92,11 @@ export default function profileSettings() {
         <h2 className={styles.userUpdate}>Аккаунт</h2>
         <div className={styles.userData}>
           <span>Логин:</span>
-          <TextField
-            id="standard-read-only-input"
-            label="Логин"
-            value={dataUser?.login}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="standard"
-          />
+          <span>{dataUser?.login}</span>
           <span>Почта:</span>
-          <TextField
-            id="standard-read-only-input"
-            label="Почта"
-            value={dataUser?.email}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="standard"
-          />
+          <span>{dataUser?.email}</span>
           <span>Имя:</span>
-          <TextField
-            id="standard-read-only-input"
-            label="Имя"
-            value={dataUser?.username + " " + dataUser?.lastName}
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="standard"
-          />
+          <span>{dataUser?.username + " " + dataUser?.lastName}</span>
         </div>
       </div>
       <style jsx>{`

@@ -2,10 +2,12 @@ import Link from "next/link";
 import React from "react";
 import { nav } from "../../../data/nav";
 import styles from "./Footer.module.sass";
+import cn from "classnames"
 
-export default function Footer() {
+export default function Footer({backColor}) {
+
   return (
-    <footer className={styles.footer}>
+    <footer className={cn(styles.footer, {[styles.blackColor]: backColor === "black"})}>
       <nav className={styles.footerNav}>
         <h2 className={styles.navLink__title}>Навигация по сайту</h2>
         {nav.map(({ id, href, title }) => {

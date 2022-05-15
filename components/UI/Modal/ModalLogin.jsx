@@ -21,6 +21,7 @@ function ModalLogin({ show, close }) {
   //state
   const [cookie, setCookie] = useCookies(["user"]);
   const [loginUser, setLoginUser] = useState({ ...DEFAULT });
+  const [result, setResult] = useState(null);
   const router = useRouter();
 
   // Handler
@@ -40,24 +41,33 @@ function ModalLogin({ show, close }) {
     if (loginUser.value.identifier && loginUser.value.password) {
       try {
         const response = await axios.post(
-          "http://localhost:1337/api/auth/local",
+          "/auth/local",
           loginUser.value
-        );
+        ).finally(() => {
+          close()
+          router.push("/")
+          window.location.reload();
+        })
         const data = { token: response.data.jwt, ...response.data.user };
+        if (!response && !data) {
+          throw new Error();
+        }
         setCookie("user", JSON.stringify(data), {
           path: "/",
           maxAge: 3600,
           sameSite: true,
         });
-        close();
-        setLoginUser({ ...DEFAULT });
-        router.push("/");
       } catch (error) {
-        console.log(error);
+        setResult("Пользователь не найден");
+        setLoginUser({
+          ...DEFAULT,
+          errorInput: false,
+        });
       }
     } else {
+      setResult("Заполните поле");
       setLoginUser({
-        ...loginUser,
+        ...DEFAULT,
         errorInput: false,
       });
     }
@@ -113,9 +123,9 @@ function ModalLogin({ show, close }) {
                 id="standard-error-helper-text"
                 label="Email"
                 type="email"
-                helperText="Заполните форму"
+                helperText={result}
                 variant="standard"
-                value={loginUser.identifier}
+                value={loginUser.value.identifier}
                 name="identifier"
                 onChange={changeHandler}
               />
@@ -124,9 +134,9 @@ function ModalLogin({ show, close }) {
                 id="standard-error-helper-text"
                 label="Пароль"
                 type="password"
-                helperText="Заполните форму"
+                helperText={result}
                 variant="standard"
-                value={loginUser.password}
+                value={loginUser.value.password}
                 name="password"
                 onChange={changeHandler}
               />
@@ -138,7 +148,7 @@ function ModalLogin({ show, close }) {
             </Button>
             <Link href="/createUserLogin">
               <a
-                onClick={close}
+                // onClick={close}
                 style={{
                   fontSize: "12px",
                   alignSelf: "center",

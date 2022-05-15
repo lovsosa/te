@@ -3,25 +3,16 @@ import Head from "next/head";
 import FormInput from "../../components/UI/FormInput/FormInput";
 import axios from "../../api/axios.news";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useAuthCookie } from "../../hooks/useAuthCookie";
 
-function addNews({ data,  }) {
-  // const [categoryData, setCategoryData] = useState();
-  // useEffect(() => {
-  //   const setCategory = async () => {
-  //     try {
-  //       const res = await axios.get("/categories");
-  //       // console.log(res.data.data);
-  //       if (!res.data) {
-  //         throw new Error();
-  //       }
-  //       setCategoryData([...res.data.data]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   setCategory();
-  // }, []);
+function addNews({ data }) {
+  const router = useRouter();
 
+  // const { dataUser } = useAuthCookie();
+  // if (!dataUser) { 
+  //   return <createUserLogin />
+  // }
   return (
     <section className="container">
       <Head>
@@ -46,7 +37,7 @@ export const getStaticProps = async () => {
     }
     return {
       props: {
-        data: res.data.data,
+        data: res?.data?.data,
       },
     };
   } catch (error) {

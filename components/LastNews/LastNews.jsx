@@ -1,8 +1,13 @@
 import axios from "../../api/axios.news";
 import styles from "./LastNews.module.sass";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../Layout/Layout";
+import cn from "classnames";
+import Link from "next/link";
+import MuLink from "@mui/material/Link";
 
 export default function LastNews() {
+  const { webColor } = useContext(AppContext);
   const [news, setNews] = useState([]);
   useEffect(() => {
     const getLastNews = async () => {
@@ -24,14 +29,28 @@ export default function LastNews() {
     <div className={styles.lastNews__list}>
       {news.map((news) => {
         return (
-          <div className={styles.post} key={news.id}>
+          <div
+            className={cn(styles.post, {
+              [styles.blackColor]: webColor === "black",
+            })}
+            key={news.id}
+          >
             <span className={styles.postImg}>
               {news.image ? (
-                <img className={styles.post__img} src={news.image.url} alt="" />
+                <img
+                  className={styles.post__img}
+                  src={news.image.url}
+                  alt="#"
+                />
               ) : null}
             </span>
             <h3 className={styles.postTitle}>{news.title}</h3>
-            <span className={styles.smallDescription}>{news.smallDes}</span>
+            <p className={styles.smallDescription}>{news.smallDes}</p>
+            <Link href={`/allNews/${news.id}`}>
+              <MuLink component="a" className={styles.description__btn}>
+                Подробнее
+              </MuLink>
+            </Link>
           </div>
         );
       })}

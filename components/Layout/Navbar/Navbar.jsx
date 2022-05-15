@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./Navbar.module.sass";
 import logoImg from "./logoImgNews.png";
 import { nav } from "../../../data/nav";
@@ -11,6 +10,8 @@ import { Box } from "@mui/system";
 import { IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useAuthCookie } from "../../../hooks/useAuthCookie";
+import cn from "classnames";
+import { AppContext } from "../Layout";
 
 const settings = [
   { name: "Профиль", click: "/profileSettings", id: "Profile" },
@@ -18,14 +19,24 @@ const settings = [
   { name: "Выход", click: "/", id: "Output" },
 ];
 
-function Navbar({}) {
+function Navbar({ backColor, setBackColor }) {
   //state
-  const [showBtn, setShowBtn] = useState(false);
-  const getHandlerBtn = () => setShowBtn(!showBtn);
-  const [anchorElUser, setAnchorElUser] = useState();
-  const router = useRouter();
   const { dataUser, setDataUser } = useAuthCookie();
+  const [anchorElUser, setAnchorElUser] = useState();
+  const [showBtn, setShowBtn] = useState(false);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
+  const getHandlerBtn = (cb) => {
+    if (cb) {
+      window.location.reload();
+    }
+    setShowBtn(!showBtn);
+  };
+
+  useEffect(() => {
+    setUser(dataUser);
+  }, [dataUser]);
 
   // fun
   const handleOpenUserMenu = (e) => {
@@ -37,6 +48,7 @@ function Navbar({}) {
   };
 
   const AddListenerUser = () => {
+    setBackColor("white");
     setAnchorElUser(null);
     removeCookies("user");
     setDataUser("");
@@ -44,7 +56,11 @@ function Navbar({}) {
   };
 
   return (
-    <header className={styles.navbar}>
+    <header
+      className={cn(styles.navbar, {
+        [styles.navBackColor]: backColor === "black",
+      })}
+    >
       <div className={styles.container}>
         <div className={styles.logo}>
           <label>
@@ -56,12 +72,18 @@ function Navbar({}) {
           {nav.map(({ href, title, id }) => {
             return (
               <Link key={id} href={href}>
-                <a className={styles.navLink}>{title}</a>
+                <a
+                  className={cn(styles.navLink, {
+                    [styles.nav__linkColor]: backColor === "black",
+                  })}
+                >
+                  {title}
+                </a>
               </Link>
             );
           })}
         </nav>
-        {!dataUser ? (
+        {!user ? (
           <div className="account">
             <Button
               variant="outlined"
@@ -76,6 +98,9 @@ function Navbar({}) {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <AccountCircle
+                  className={cn(styles.navUser__Icon, {
+                    [styles.nav__linkColor]: backColor === "black",
+                  })}
                   style={{
                     maxWidth: "40px",
                     maxHeight: "40px",

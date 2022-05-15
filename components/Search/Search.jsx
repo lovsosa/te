@@ -3,8 +3,9 @@ import { Button, InputBase } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "./Search.module.sass";
+import cn from "classnames";
 
-export default function Search() {
+export default function Search({ backColor }) {
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -46,7 +47,11 @@ export default function Search() {
     },
   }));
   return (
-    <section className={styles.userEmail}>
+    <section
+      className={cn(styles.userEmail, {
+        [styles.blackColor]: backColor === "black",
+      })}
+    >
       <Search>
         <SearchIconWrapper>
           <SearchIcon />

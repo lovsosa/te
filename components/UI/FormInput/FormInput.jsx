@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Autocomplete } from "@mui/material";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import style from "./FormInput.module.sass";
+import styles from "./FormInput.module.sass";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import axios from "../../../api/axios.news";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import { AppContext } from "../../Layout/Layout";
+import cn from "classnames";
+import { useAuthCookie } from "../../../hooks/useAuthCookie";
 
 const DEFAULT = {
   categories: null,
@@ -21,6 +24,8 @@ function FormInput({ data }) {
   const [formNews, setFormNews] = useState({ ...DEFAULT });
   const [uploadImage, setUploadImage] = useState();
   const [loading, setLoading] = useState(false);
+  const { webColor } = useContext(AppContext);
+  const { dataUser, setDataUser } = useAuthCookie();
 
   //Handler
   const changeHandler = (e) => {
@@ -29,7 +34,7 @@ function FormInput({ data }) {
       [e.target.name]: e.target.value,
     });
   };
-  const changeHandlerInnerText = (e, newValue) => {
+  const changeHandlerInnerText = (_, newValue) => {
     if (newValue) {
       setFormNews({
         ...formNews,
@@ -66,6 +71,7 @@ function FormInput({ data }) {
       .post("/news", {
         data: {
           ...formNews,
+          // user: dataUser.id,
           image: { ...uploadImage },
         },
       })
@@ -90,9 +96,9 @@ function FormInput({ data }) {
         }}
         noValidate
         autoComplete="off"
-        className={style.formHeader}
+        className={styles.formHeader}
       >
-        <div className={style.sidebar}>
+        <div className={styles.sidebar}>
           <Autocomplete
             id="combo-box-demo"
             options={data}
@@ -103,7 +109,7 @@ function FormInput({ data }) {
                 <TextField
                   onChange={changeHandler}
                   name="categories"
-                  // value={data.id}
+                  value={data.id}
                   {...params}
                   id="standard-basic"
                   label="Выберите категорию"
@@ -145,18 +151,23 @@ function FormInput({ data }) {
           variant="standard"
           onChange={changeHandler}
         />
-        <div className={style.fileImg__span}>
+        <div className={styles.fileImg__span}>
           {uploadImage ? (
             <img
-              className={style.fileUpload__img}
+              className={styles.fileUpload__img}
               src={`${uploadImage.url}`}
               alt="#"
             />
           ) : null}
         </div>
-        <div className={style.formBtn}>
+        <div className={styles.formBtn}>
           <Stack direction="row" alignItems="center" spacing={2} sx={{ m: 0 }}>
-            <label htmlFor="icon-button-file" className={style.iconPhoto__file}>
+            <label
+              htmlFor="icon-button-file"
+              className={cn(styles.iconPhoto__file, {
+                [styles.blackColor]: webColor === "black",
+              })}
+            >
               <input
                 style={{ display: "none" }}
                 accept="image/*"
